@@ -1,0 +1,76 @@
+<template>
+  <div class="relative">
+    <!-- Header with Menu Button -->
+    <div class="flex items-center justify-between h-16 bg-white border-b border-gray-200">
+      <div class="flex items-center px-4">
+        <button class="text-gray-500 focus:outline-none focus:text-gray-700">
+          <span class="mdi mdi-menu text-2xl"></span>
+        </button>
+        LMS
+      </div>
+      
+
+      <button
+    @click="toggleNotification"
+    class="relative flex items-center justify-center h-12 px-4 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+  >
+    <!-- Badge -->
+    <span
+      class="absolute top-0 right-0 flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full -translate-x-1/2 -translate-y-1/2"
+    >
+      12
+    </span>
+
+    <!-- Bell Icon -->
+    <span class="mdi mdi-bell-outline text-xl"></span>
+  </button>
+    </div>
+
+    <!-- Notification Dropdown -->
+    <div v-if="showNotification" class="absolute top-16 right-4 bg-white border border-gray-200 shadow-lg w-80 max-h-96 overflow-y-auto z-50">
+      <v-infinite-scroll
+        color="secondary"
+        height="400"
+        mode="manual"
+        ref="infiniteScroll"
+        @load="load"
+      >
+        <template v-for="(item, index) in items" :key="item">
+          <div :class="['pa-12', index % 2 === 0 ? 'bg-grey-lighten-2' : '']">
+            New Book Added to  #{{ item }}
+          </div>
+        </template>
+      </v-infinite-scroll>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data: () => ({
+    items: Array.from({ length: 5 }, (k, v) => v + 1),
+    showNotification: false,
+  }),
+
+  methods: {
+    load({ done }) {
+      setTimeout(() => {
+        this.items.push(...Array.from({ length: 5 }, (k, v) => v + this.items.at(-1) + 1))
+        done('ok')
+      }, 1000)
+    },
+
+    triggerLoad() {
+      this.$refs.infiniteScroll.load()
+    },
+
+    toggleNotification() {
+      this.showNotification = !this.showNotification
+    }
+  },
+}
+</script>
+
+<style scoped>
+/* Add custom styles if needed */
+</style>
