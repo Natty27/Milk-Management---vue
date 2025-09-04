@@ -41,7 +41,7 @@
       <div class="flex items-center mb-3 p-2 rounded-lg">
         <i class="mdi mdi-account-circle text-gray-500 text-2xl mr-3"></i>
         <span class="text-gray-800 text-sm">{{
-          user?.name || "User Name"
+          user?.name || getUsernameFromStorage() || "User Name"
         }}</span>
       </div>
       <button
@@ -85,10 +85,10 @@ export default {
           path: "/sales",
           icon: "mdi mdi-cash",
         },
-        { title: "Settings", path: "/settings", icon: "mdi mdi-cog" },
-        { title: "Calendar", path: "/calendar", icon: "mdi mdi-calendar" },
-        { title: "Files", path: "/files", icon: "mdi mdi-folder" },
-        { title: "Analytics", path: "/analytics", icon: "mdi mdi-chart-bar" },
+        // { title: "Settings", path: "/settings", icon: "mdi mdi-cog" },
+        // { title: "Calendar", path: "/calendar", icon: "mdi mdi-calendar" },
+        // { title: "Files", path: "/files", icon: "mdi mdi-folder" },
+        // { title: "Analytics", path: "/analytics", icon: "mdi mdi-chart-bar" },
       ],
       isOpen: false,
     };
@@ -121,6 +121,10 @@ export default {
         // md breakpoint
         this.isOpen = true;
       }
+    },
+
+    getUsernameFromStorage() {
+      return localStorage.getItem("username");
     },
   },
 

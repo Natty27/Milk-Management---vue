@@ -32,6 +32,29 @@ export default {
     }
   },
 
+  async getOverDueCustomers() {
+    try {
+      const response = await customerService.get(
+        `${API_URL}/customers/overdue`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async processMakePayment(id) {
+    console.log("Processing payment for customer ID:", id);
+    try {
+      const response = await customerService.post(
+        `${API_URL}/customers/${id}/payment`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async getCustomerById(id) {
     try {
       const response = await customerService.get(`${API_URL}/customers/${id}`);

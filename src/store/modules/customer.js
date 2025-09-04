@@ -6,6 +6,7 @@ const state = {
   loading: false,
   error: null,
   customers: [],
+  overDueCustomers: [],
   selectedCustomer: null,
 };
 
@@ -13,6 +14,7 @@ const getters = {
   loading: (state) => state.loading,
   error: (state) => state.error,
   customers: (state) => state.customers,
+  overDueCustomers: (state) => state.overDueCustomers,
   selectedCustomer: (state) => state.selectedCustomer,
 };
 
@@ -38,6 +40,35 @@ const actions = {
       const customers = response;
       commit("setCustomers", customers);
       commit("setLoading", false);
+    } catch (error) {
+      commit("setError", error);
+      commit("setLoading", false);
+    }
+  },
+
+  async getOverDueCustomers({ commit }) {
+    commit("setLoading", true);
+    commit("setError", null);
+    try {
+      const response = await customerService.getOverDueCustomers();
+      const customers = response;
+      commit("setOverDueCustomers", customers);
+      commit("setLoading", false);
+    } catch (error) {
+      commit("setError", error);
+      commit("setLoading", false);
+    }
+  },
+
+  async processMakePayment({ commit }, { id }) {
+    console.log("Action processMakePayment called with ID:", id);
+
+    commit("setLoading", true);
+    commit("setError", null);
+    try {
+      await customerService.processMakePayment(id);
+      commit("setLoading", false);
+      await router.push({ name: "customer" });
     } catch (error) {
       commit("setError", error);
       commit("setLoading", false);
@@ -107,6 +138,9 @@ const mutations = {
   },
   setCustomers(state, customers) {
     state.customers = customers;
+  },
+  setOverDueCustomers(state, customers) {
+    state.overDueCustomers = customers;
   },
   setSelectedCustomer(state, customer) {
     state.selectedCustomer = customer;

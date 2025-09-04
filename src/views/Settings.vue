@@ -197,6 +197,17 @@
               </div>
             </div>
           </div>
+          <div v-if="expensePieChartData" class="mt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">
+              Category Breakdown
+            </h3>
+            <div class="h-72">
+              <Pie
+                :data="expensePieChartData.data"
+                :options="expensePieChartData.options"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -230,6 +241,17 @@
                   >${{ item.total.toLocaleString() }}</span
                 >
               </div>
+            </div>
+          </div>
+          <div v-if="revenueBarChartData" class="mt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">
+              Revenue by Product
+            </h3>
+            <div class="h-72">
+              <Bar
+                :data="revenueBarChartData.data"
+                :options="revenueBarChartData.options"
+              />
             </div>
           </div>
         </div>
@@ -274,6 +296,17 @@
               </p>
             </div>
           </div>
+          <div v-if="profitVsExpenseBarChartData" class="mt-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">
+              Revenue vs Expenses
+            </h3>
+            <div class="h-72">
+              <Bar
+                :data="profitVsExpenseBarChartData.data"
+                :options="profitVsExpenseBarChartData.options"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -282,6 +315,17 @@
         v-if="currentReportType === 'cowProduction' && cowProductionReport"
         class="space-y-6"
       >
+        <div v-if="cowAvgDailyLineData" class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            Production Overview
+          </h2>
+          <div class="h-72">
+            <Line
+              :data="cowAvgDailyLineData.data"
+              :options="cowAvgDailyLineData.options"
+            />
+          </div>
+        </div>
         <div
           v-for="cow in cowProductionReport"
           :key="cow.cowId"
@@ -425,6 +469,30 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { Pie, Bar, Line } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+} from "chart.js";
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title
+);
 import {
   ChartBarIcon,
   CurrencyDollarIcon,
@@ -447,6 +515,9 @@ export default {
   name: "ReportsDashboard",
 
   components: {
+    Pie,
+    Bar,
+    Line,
     ChartBarIcon,
     CurrencyDollarIcon,
     ArrowTrendingUpIcon,
@@ -525,6 +596,148 @@ export default {
           bgColor: "bg-orange-500",
         },
       ];
+    },
+
+    expensePieChartData() {
+      if (!this.expenseReport || !this.expenseReport.byCategory) return null;
+      const labels = this.expenseReport.byCategory.map((c) => c.category);
+      const values = this.expenseReport.byCategory.map((c) => c.total);
+      const colors = [
+        "#3b82f6",
+        "#22c55e",
+        "#f59e0b",
+        "#ef4444",
+        "#8b5cf6",
+        "#06b6d4",
+        "#84cc16",
+        "#f97316",
+      ];
+      return {
+        data: {
+          labels,
+          datasets: [
+            {
+              data: values,
+              backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" },
+            title: { display: false },
+          },
+        },
+      };
+    },
+
+    revenueBarChartData() {
+      if (!this.revenueReport || !this.revenueReport.byProduct) return null;
+      const labels = this.revenueReport.byProduct.map((p) => p.product);
+      const values = this.revenueReport.byProduct.map((p) => p.total);
+      return {
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Revenue",
+              data: values,
+              backgroundColor: "#10b981",
+              borderRadius: 6,
+              maxBarThickness: 40,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              grid: { color: "#f3f4f6" },
+              ticks: { callback: (v) => `$${v}` },
+            },
+          },
+        },
+      };
+    },
+
+    profitVsExpenseBarChartData() {
+      if (!this.profitLossReport) return null;
+      const labels = ["Revenue", "Expenses", "Net Profit"];
+      const values = [
+        this.profitLossReport.totalRevenue || 0,
+        this.profitLossReport.totalExpenses || 0,
+        this.profitLossReport.netProfit || 0,
+      ];
+      const colors = ["#16a34a", "#ef4444", "#3b82f6"];
+      return {
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Amount",
+              data: values,
+              backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+              borderRadius: 6,
+              maxBarThickness: 50,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              grid: { color: "#f3f4f6" },
+              ticks: { callback: (v) => `$${v}` },
+            },
+          },
+        },
+      };
+    },
+
+    cowAvgDailyLineData() {
+      if (!this.cowProductionReport || !Array.isArray(this.cowProductionReport))
+        return null;
+      const labels = this.cowProductionReport.map((c) => c.cowName);
+      const values = this.cowProductionReport.map((c) =>
+        Number(c.averageDaily || 0)
+      );
+      return {
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Avg Daily Milk (L)",
+              data: values,
+              borderColor: "#2563eb",
+              backgroundColor: "rgba(37, 99, 235, 0.25)",
+              pointBackgroundColor: "#2563eb",
+              pointRadius: 4,
+              tension: 0.3,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: true, position: "bottom" } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { grid: { color: "#f3f4f6" } },
+          },
+        },
+      };
     },
   },
 

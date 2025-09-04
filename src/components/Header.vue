@@ -30,8 +30,11 @@
 <script setup>
 import { computed } from "vue";
 
-const userName = "User Name";
-const userInitial = computed(() => userName.charAt(0).toUpperCase());
+const userName = computed(() => {
+  return localStorage.getItem("username") || "User Name";
+});
+
+const userInitial = computed(() => userName.value.charAt(0).toUpperCase());
 </script>
 
 <style scoped>

@@ -1,17 +1,17 @@
-import axios from 'axios';
+import axios from "axios";
 
-import { API_URL } from '@/constants/apiConstants';
+import { API_URL } from "@/constants/apiConstants";
 
 const authService = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 export const login = async (credentials) => {
   try {
-    const response = await authService.post('/users/signin', credentials);
+    const response = await authService.post("/auth/login", credentials);
     return response.data;
   } catch (error) {
     throw error;
@@ -20,7 +20,7 @@ export const login = async (credentials) => {
 
 export const register = async (userData) => {
   try {
-    const response = await authService.post('/users/register', userData);
+    const response = await authService.post("/auth/signup", userData);
     return response.data;
   } catch (error) {
     throw error;
@@ -29,7 +29,7 @@ export const register = async (userData) => {
 
 export const getAllUsersAPI = async () => {
   try {
-    const response = await authService.get('/users/');
+    const response = await authService.get("/users/");
     return response.data;
   } catch (error) {
     throw error;

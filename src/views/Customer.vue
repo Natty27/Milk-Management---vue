@@ -98,10 +98,41 @@
 
                             <v-text-field
                               v-model="editedItem.amount"
-                              label="Amount *"
+                              label="Amount (Liters) *"
                               variant="outlined"
                               density="comfortable"
                               type="number"
+                              required
+                            ></v-text-field>
+
+                            <v-select
+                              v-model="editedItem.type"
+                              :items="options"
+                              item-title="text"
+                              item-value="value"
+                              label="Type *"
+                              variant="outlined"
+                              density="comfortable"
+                              required
+                            ></v-select>
+
+                            <v-text-field
+                              v-if="editedItem.type === 'contract'"
+                              v-model="editedItem.monthlyDueDay"
+                              label="Due Day *"
+                              variant="outlined"
+                              density="comfortable"
+                              type="number"
+                              required
+                            ></v-text-field>
+
+                            <v-text-field
+                              v-if="editedItem.type === 'contract'"
+                              v-model="editedItem.lastPaymentDate"
+                              label="Last Payment Date *"
+                              variant="outlined"
+                              density="comfortable"
+                              type="date"
                               required
                             ></v-text-field>
 
@@ -175,10 +206,52 @@
 
                             <v-text-field
                               v-model="editedItem.amount"
-                              label="Amount *"
+                              label="Amount (Liters) *"
                               variant="outlined"
                               density="comfortable"
                               type="number"
+                              required
+                            ></v-text-field>
+
+                            <v-select
+                              v-model="editedItem.type"
+                              :items="options"
+                              item-title="text"
+                              item-value="value"
+                              label="Type *"
+                              variant="outlined"
+                              density="comfortable"
+                              required
+                            ></v-select>
+
+                            <v-select
+                              v-model="editedItem.status"
+                              :items="statusOptions"
+                              item-title="text"
+                              item-value="value"
+                              label="Status *"
+                              variant="outlined"
+                              density="comfortable"
+                              required
+                            ></v-select>
+
+                            <v-text-field
+                              v-if="editedItem.type === 'contract'"
+                              v-model="editedItem.monthlyDueDay"
+                              label="Due Day *"
+                              variant="outlined"
+                              density="comfortable"
+                              type="number"
+                              required
+                            ></v-text-field>
+
+                            <v-text-field
+                              v-if="editedItem.type === 'contract'"
+                              v-model="editedItem.lastPaymentDate"
+                              label="Last Payment Date *"
+                              variant="outlined"
+                              density="comfortable"
+                              type="date"
                               required
                             ></v-text-field>
 
@@ -193,6 +266,67 @@
                           <div class="flex justify-end space-x-3 mt-6">
                             <v-btn
                               @click="closeEdit"
+                              variant="outlined"
+                              color="grey-darken-1"
+                            >
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                              type="submit"
+                              color="blue-darken-2"
+                              variant="elevated"
+                            >
+                              Update
+                            </v-btn>
+                          </div>
+                        </v-form>
+                      </div>
+                    </div>
+                  </div>
+                </v-card>
+              </v-dialog>
+
+              <!-- Edit Cattle Dialog -->
+              <v-dialog v-model="dialogProcess" max-width="600px">
+                <v-card>
+                  <div
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 backdrop-blur-sm"
+                  >
+                    <div
+                      class="bg-white rounded-xl shadow-xl overflow-hidden w-full max-w-md"
+                    >
+                      <div
+                        class="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white"
+                      >
+                        <div class="flex justify-between items-center">
+                          <h2 class="text-xl font-semibold">Process Payment</h2>
+                          <v-btn
+                            icon
+                            @click="closeEdit"
+                            variant="text"
+                            color="white"
+                          >
+                            <v-icon>mdi-close</v-icon>
+                          </v-btn>
+                        </div>
+                      </div>
+                      <div class="p-6">
+                        <v-form @submit.prevent="makePayment(editedItem)">
+                          <!-- Edit Cattle Form Fields -->
+                          <div class="space-y-4">
+                            <v-text-field
+                              v-model="editedItem.name"
+                              label="Name *"
+                              variant="outlined"
+                              density="comfortable"
+                              type="text"
+                              required
+                              disabled
+                            ></v-text-field>
+                          </div>
+                          <div class="flex justify-end space-x-3 mt-6">
+                            <v-btn
+                              @click="closeProcess"
                               variant="outlined"
                               color="grey-darken-1"
                             >
@@ -264,6 +398,19 @@
                   cursor: pointer;
                   font-size: 15px;
                 "
+                @click.stop="processPayment(item)"
+                title="Process Payment"
+              >
+                <v-icon>mdi-cash</v-icon>
+              </span>
+
+              <!-- Edit Icon -->
+              <span
+                style="
+                  color: #1976d2 !important;
+                  cursor: pointer;
+                  font-size: 15px;
+                "
                 @click.stop="editItem(item)"
                 title="Edit"
               >
@@ -290,8 +437,8 @@
           <template v-slot:item.type="{ item }">
             {{ formatText(item.type) }}
           </template>
-          <template v-slot:item.date="{ item }">
-            {{ formatDate(item.date) }}
+          <template v-slot:item.lastPaymentDate="{ item }">
+            {{ formatDate(item.lastPaymentDate) }}
           </template>
 
           <!-- No Data Slot -->
@@ -322,12 +469,17 @@ export default {
   data: () => ({
     dialogAdd: false, // Separate dialog for Add Customer
     dialogEdit: false, // Separate dialog for Edit Cattle
+    dialogProcess: false, // Separate dialog for Process Payment
     dialogDelete: false,
     drawer: false,
     headers: [
       { title: "Name", align: "start", key: "name" },
       { title: "Amount", key: "amount" },
+      { title: "Due Day", key: "monthlyDueDay" },
+      { title: "Last payment Date", key: "lastPaymentDate" },
       { title: "Address", key: "address" },
+      { title: "Type", key: "type" },
+      { title: "Status", key: "status" },
       { title: "Actions", key: "actions", sortable: false, width: "120px" },
     ],
     search: "",
@@ -346,10 +498,25 @@ export default {
       shelfNo: "",
       availableForOutsideReaders: false,
     },
+    options: [
+      { text: "Regular", value: "regular" },
+      { text: "Contract", value: "contract" },
+    ],
+    statusOptions: [
+      { text: "Active", value: "active" },
+      { text: "Inactive", value: "inactive" },
+      { text: "Overdue", value: "overdue" },
+      { text: "Suspended", value: "suspended" },
+    ],
   }),
 
   computed: {
-    ...mapGetters("customer", ["loading", "error", "customers"]),
+    ...mapGetters("customer", [
+      "loading",
+      "error",
+      "customers",
+      "overDueCustomers",
+    ]),
   },
 
   watch: {
@@ -371,6 +538,8 @@ export default {
   methods: {
     ...mapActions("customer", [
       "getAllCustomers",
+      "getOverDueCustomers",
+      "processMakePayment",
       "deleteCustomer",
       "addCustomer",
       "updateCustomer",
@@ -378,6 +547,7 @@ export default {
 
     fetchCustomers() {
       this.getAllCustomers();
+      this.getOverDueCustomers();
     },
 
     // Add Customer Methods
@@ -398,6 +568,11 @@ export default {
         name: this.editedItem.name,
         address: this.editedItem.address,
         amount: Number(this.editedItem.amount),
+        type: this.editedItem.type,
+        monthlyDueDay: Number(this.editedItem.monthlyDueDay) || null,
+        lastPaymentDate: this.editedItem.lastPaymentDate
+          ? new Date(this.editedItem.lastPaymentDate)
+          : null,
       };
       try {
         await this.addCustomer(payload);
@@ -415,8 +590,21 @@ export default {
       this.dialogEdit = true;
     },
 
+    processPayment(item) {
+      this.editedIndex = this.customers.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogProcess = true;
+    },
+
     closeEdit() {
       this.dialogEdit = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
+    closeProcess() {
+      this.dialogProcess = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
@@ -431,6 +619,18 @@ export default {
         });
         this.fetchCustomers();
         this.closeEdit();
+      } catch (error) {
+        console.error("Error updating customer:", error);
+      }
+    },
+    async makePayment() {
+      try {
+        console.log("Making payment for customer ID:", this.editedItem._id);
+        await this.processMakePayment({
+          id: this.editedItem._id,
+        });
+        this.fetchCustomers();
+        this.closeProcess();
       } catch (error) {
         console.error("Error updating customer:", error);
       }

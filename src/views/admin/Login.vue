@@ -7,19 +7,25 @@
         <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
         <form @submit.prevent="performLogin">
           <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-              Email
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="username"
+            >
+              Username
             </label>
             <input
-              v-model="userName"
+              v-model="username"
               type="username"
-              id="email"
+              id="username"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
             />
           </div>
           <div class="mb-6">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="password"
+            >
               Password
             </label>
             <input
@@ -40,7 +46,11 @@
               Login
             </button>
           </div>
-          <div v-if="error" class="mt-3 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div
+            v-if="error"
+            class="mt-3 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
             <strong class="font-bold">Error:</strong>
             <span class="block sm:inline">{{ error.message }}</span>
           </div>
@@ -51,30 +61,30 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
     return {
-      userName: '',
-      password: '',
-      loginAnimation: false
+      username: "",
+      password: "",
+      loginAnimation: false,
     };
   },
   computed: {
-    ...mapGetters('auth', ['loading', 'error'])
+    ...mapGetters("auth", ["loading", "error"]),
   },
   methods: {
-    ...mapActions('auth', ['login']),
+    ...mapActions("auth", ["login"]),
     performLogin() {
-      this.login({ userName: this.userName, password: this.password });
+      this.login({ username: this.username, password: this.password });
     },
     animateLogin() {
       this.loginAnimation = true;
       setTimeout(() => {
         this.loginAnimation = false;
       }, 1000);
-    }
-  }
+    },
+  },
 };
 </script>

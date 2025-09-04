@@ -130,22 +130,22 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   //console.log(`Navigating to: ${to.name}`);
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
-//     if (!store.getters['auth/isAuthenticated']) {
-//       console.log('Not authenticated, redirecting to login');
-//       next({ name: 'login' });
-//     } else {
-//       next();
-//     }
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  //console.log(`Navigating to: ${to.name}`);
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!store.getters["auth/isAuthenticated"]) {
+      console.log("Not authenticated, redirecting to login");
+      next({ name: "login" });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
 
-//router.afterEach((to, from) => {
-//console.log(`Successfully navigated to: ${to.name}`);
-//});
+router.afterEach((to, from) => {
+  console.log(`Successfully navigated to: ${to.name}`);
+});
 
 export default router;
