@@ -11,7 +11,7 @@
       <v-card flat class="rounded-lg shadow-sm border">
         <v-data-table
           :headers="headers"
-          :items="cows"
+          :items="paymentHistorys"
           :search="search"
           :sort-by="[{ key: 'title', order: 'asc' }]"
           class="elevation-0"
@@ -28,15 +28,15 @@
             <v-toolbar flat class="px-4 py-3 bg-white rounded-t-lg">
               <v-toolbar-title class="text-xl font-semibold text-gray-800">
                 <v-icon class="mr-2" color="deep-purple-accent-4"
-                  >mdi-cow</v-icon
+                  >mdi-account</v-icon
                 >
-                Cattle Management
+                Payment History
               </v-toolbar-title>
               <v-divider class="mx-4" inset vertical></v-divider>
               <v-spacer></v-spacer>
               <v-text-field
                 v-model="search"
-                label="Search cattle..."
+                label="Search ..."
                 prepend-inner-icon="mdi-magnify"
                 clearable
                 single-line
@@ -45,93 +45,6 @@
                 hide-details
                 class="w-64"
               ></v-text-field>
-              <!-- Add Cattle Dialog -->
-              <v-dialog v-model="dialogAdd" max-width="600px">
-                <template v-slot:activator="{ props }">
-                  <v-btn
-                    class="ml-4"
-                    color="deep-purple-accent-4"
-                    dark
-                    prepend-icon="mdi-plus"
-                    variant="elevated"
-                    v-bind="props"
-                  >
-                    Add Cattle
-                  </v-btn>
-                </template>
-                <v-card>
-                  <div
-                    class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 backdrop-blur-sm"
-                  >
-                    <div
-                      class="bg-white rounded-xl shadow-xl overflow-hidden w-full max-w-md"
-                    >
-                      <div
-                        class="bg-gradient-to-r from-deep-purple-accent-4 to-purple-600 p-4 text-black"
-                      >
-                        <div class="flex justify-between items-center">
-                          <h2 class="text-xl font-semibold">Add New Cattle</h2>
-                          <v-btn
-                            icon
-                            @click="closeAdd"
-                            variant="text"
-                            color="white"
-                          >
-                            <v-icon>mdi-close</v-icon>
-                          </v-btn>
-                        </div>
-                      </div>
-                      <div class="p-6">
-                        <v-form @submit.prevent="save(editedItem)">
-                          <!-- Add Cattle Form Fields -->
-                          <div class="space-y-4">
-                            <v-text-field
-                              v-model="editedItem.name"
-                              label="Name*"
-                              variant="outlined"
-                              density="comfortable"
-                              required
-                            ></v-text-field>
-
-                            <v-text-field
-                              v-model="editedItem.breed"
-                              label="Breed*"
-                              variant="outlined"
-                              density="comfortable"
-                              required
-                            ></v-text-field>
-
-                            <!-- Ethiopian Date Picker -->
-                            <EthiopianDatePicker
-                              v-model="editedItem.birthDate"
-                              label="Birth Date"
-                            />
-
-                            <!-- Include all your form fields here -->
-                            <!-- This is your "Add" specific form -->
-                          </div>
-                          <div class="flex justify-end space-x-3 mt-6">
-                            <v-btn
-                              @click="closeAdd"
-                              variant="outlined"
-                              color="grey-darken-1"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                              type="submit"
-                              color="deep-purple-accent-4"
-                              variant="elevated"
-                            >
-                              Add Cattle
-                            </v-btn>
-                          </div>
-                        </v-form>
-                      </div>
-                    </div>
-                  </div>
-                </v-card>
-              </v-dialog>
 
               <!-- Edit Cattle Dialog -->
               <v-dialog v-model="dialogEdit" max-width="600px">
@@ -146,9 +59,7 @@
                         class="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white"
                       >
                         <div class="flex justify-between items-center">
-                          <h2 class="text-xl font-semibold">
-                            Edit Cattle Details
-                          </h2>
+                          <h2 class="text-xl font-semibold">Edit Details</h2>
                           <v-btn
                             icon
                             @click="closeEdit"
@@ -164,49 +75,33 @@
                           <!-- Edit Cattle Form Fields -->
                           <div class="space-y-4">
                             <v-text-field
-                              v-model="editedItem.name"
-                              label="Name*"
+                              v-model="editedItem.customerId.name"
+                              label="Name *"
                               variant="outlined"
                               density="comfortable"
-                              required
+                              type="text"
+                              readonly
                             ></v-text-field>
 
                             <v-text-field
-                              v-model="editedItem.breed"
-                              label="Breed*"
+                              v-model="editedItem.amount"
+                              label="Payment Amount (ETB) *"
                               variant="outlined"
                               density="comfortable"
-                              required
+                              type="number"
+                              readonly
                             ></v-text-field>
-
-                            <!-- <v-text-field
-                              v-model="editedItem.birthDate"
-                              label="Birth Date*"
-                              variant="outlined"
-                              density="comfortable"
-                              type="date"
-                              required
-                            ></v-text-field> -->
-
-                            <EthiopianDatePicker
-                              v-model="editedItem.birthDate"
-                              label="Birth Date"
-                            />
 
                             <v-select
                               v-model="editedItem.status"
                               :items="statusOptions"
                               item-title="text"
                               item-value="value"
-                              label="Status*"
+                              label="Status *"
                               variant="outlined"
                               density="comfortable"
                               required
                             ></v-select>
-
-                            <!-- Include all your form fields here -->
-                            <!-- This is your "Edit" specific form -->
-                            <!-- You can make some fields read-only if needed -->
                           </div>
                           <div class="flex justify-end space-x-3 mt-6">
                             <v-btn
@@ -222,6 +117,57 @@
                               variant="elevated"
                             >
                               Update
+                            </v-btn>
+                          </div>
+                        </v-form>
+                      </div>
+                    </div>
+                  </div>
+                </v-card>
+              </v-dialog>
+
+              <!-- Edit Cattle Dialog -->
+              <v-dialog v-model="dialogProcess" max-width="600px">
+                <v-card>
+                  <div
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 backdrop-blur-sm"
+                  >
+                    <div
+                      class="bg-white rounded-xl shadow-xl overflow-hidden w-full max-w-md"
+                    >
+                      <div
+                        class="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white"
+                      >
+                        <div class="flex justify-between items-center">
+                          <h2 class="text-xl font-semibold">Print</h2>
+                          <v-btn
+                            icon
+                            @click="closeEdit"
+                            variant="text"
+                            color="white"
+                          >
+                            <v-icon>mdi-close</v-icon>
+                          </v-btn>
+                        </div>
+                      </div>
+                      <div class="p-6">
+                        <v-form @submit.prevent="print(editedItem)">
+                          <!-- Edit Cattle Form Fields -->
+                          <h3>Are you sure you want to print the invoice?</h3>
+                          <div class="flex justify-end space-x-3 mt-6">
+                            <v-btn
+                              @click="closeProcess"
+                              variant="outlined"
+                              color="grey-darken-1"
+                            >
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                              type="submit"
+                              color="blue-darken-2"
+                              variant="elevated"
+                            >
+                              Print
                             </v-btn>
                           </div>
                         </v-form>
@@ -282,6 +228,19 @@
                   cursor: pointer;
                   font-size: 15px;
                 "
+                @click.stop="processPayment(item)"
+                title="Process Payment"
+              >
+                <v-icon>mdi-printer</v-icon>
+              </span>
+
+              <!-- Edit Icon -->
+              <span
+                style="
+                  color: #1976d2 !important;
+                  cursor: pointer;
+                  font-size: 15px;
+                "
                 @click.stop="editItem(item)"
                 title="Edit"
               >
@@ -302,20 +261,23 @@
               </span>
             </div>
           </template>
-          <template v-slot:item.birthDate="{ item }">
-            {{ $toEthiopianString(item.birthDate) }}
+          <template v-slot:item.status="{ item }">
+            {{ formatText(item.status) }}
+          </template>
+          <template v-slot:item.paymentDate="{ item }">
+            {{ $toEthiopianString(item.paymentDate) }}
           </template>
 
           <!-- No Data Slot -->
           <template v-slot:no-data>
             <div class="py-8 text-center text-gray-500">
-              <v-icon size="64" color="grey-lighten-2">mdi-cow-off</v-icon>
-              <div class="text-lg mt-2">No cattle records found</div>
+              <v-icon size="64" color="grey-lighten-2">mdi-account-off</v-icon>
+              <div class="text-lg mt-2">No records found</div>
               <v-btn
                 color="deep-purple-accent-4"
                 variant="outlined"
                 class="mt-4"
-                @click="fetchCows"
+                @click="fetchPaymentHistorys"
               >
                 Refresh
               </v-btn>
@@ -328,21 +290,21 @@
 </template>
 
 <script>
-import EthiopianDatePicker from "@/components/EthiopianDatePicker.vue";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
-  components: { EthiopianDatePicker },
   data: () => ({
-    dialogAdd: false, // Separate dialog for Add Cattle
+    dialogAdd: false, // Separate dialog for Add Customer
     dialogEdit: false, // Separate dialog for Edit Cattle
+    dialogProcess: false, // Separate dialog for Process Payment
     dialogDelete: false,
     drawer: false,
     headers: [
-      { title: "Name", align: "start", key: "name" },
+      { title: "Name", align: "start", key: "customerId.name" },
+      { title: "Reference Number", key: "referenceNumber" },
+      { title: "Amount", key: "amount" },
+      { title: "Payment Date", key: "paymentDate" },
       { title: "Status", key: "status" },
-      { title: "Breed", key: "breed" },
-      { title: "Birth Date", key: "birthDate" },
       { title: "Actions", key: "actions", sortable: false, width: "120px" },
     ],
     search: "",
@@ -361,18 +323,20 @@ export default {
       shelfNo: "",
       availableForOutsideReaders: false,
     },
+    options: [
+      { text: "Regular", value: "regular" },
+      { text: "Contract", value: "contract" },
+    ],
     statusOptions: [
-      { text: "Active", value: "active" },
-      { text: "Sick", value: "sick" },
-      { text: "Dry", value: "dry" },
-      { text: "Sold", value: "sold" },
-      { text: "Dead", value: "dead" },
+      { text: "Success", value: "success" },
+      { text: "Failed", value: "failed" },
+      { text: "Pending", value: "pending" },
+      { text: "Refunded", value: "refunded" },
     ],
   }),
 
   computed: {
-    ...mapGetters("cow", ["loading", "error", "cows"]),
-    ...mapGetters("category", ["loading", "error", "categorys"]),
+    ...mapGetters("customer", ["loading", "error", "paymentHistorys"]),
   },
 
   watch: {
@@ -388,23 +352,25 @@ export default {
   },
 
   created() {
-    this.fetchCows();
-    this.fetchCategorys();
+    this.fetchPaymentHistorys();
   },
 
   methods: {
-    ...mapActions("cow", ["getAllCows", "deleteCow", "addCow", "updateCow"]),
-    ...mapActions("category", ["getAllCategorys"]),
+    ...mapActions("customer", [
+      "getAllCustomers",
+      "getOverDueCustomers",
+      "getPaymentHistorys",
+      "processMakePayment",
+      "deleteCustomer",
+      "addCustomer",
+      "updatePaymentRequest",
+    ]),
 
-    fetchCows() {
-      this.getAllCows();
+    async fetchPaymentHistorys() {
+      await this.getPaymentHistorys();
     },
 
-    fetchCategorys() {
-      this.getAllCategorys();
-    },
-
-    // Add Cattle Methods
+    // Add Customer Methods
     openAdd() {
       this.editedItem = Object.assign({}, this.defaultItem);
       this.dialogAdd = true;
@@ -420,23 +386,34 @@ export default {
     async save() {
       const payload = {
         name: this.editedItem.name,
-        breed: this.editedItem.breed,
-        //birthDate: new Date(this.editedItem.birthDate), // 👈 convert string to Date
+        address: this.editedItem.address,
+        amount: Number(this.editedItem.amount),
+        type: this.editedItem.type,
+        monthlyDueDay: Number(this.editedItem.monthlyDueDay) || null,
+        lastPaymentDate: this.editedItem.lastPaymentDate
+          ? new Date(this.editedItem.lastPaymentDate)
+          : null,
       };
       try {
-        await this.addCow(payload);
-        this.fetchCows();
+        await this.addCustomer(payload);
+        this.fetchPaymentHistorys();
         this.closeAdd();
       } catch (error) {
-        console.error("Error adding cow:", error);
+        console.error("Error adding customer:", error);
       }
     },
 
     // Edit Cattle Methods
     editItem(item) {
-      this.editedIndex = this.cows.indexOf(item);
+      this.editedIndex = this.paymentHistorys.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogEdit = true;
+    },
+
+    processPayment(item) {
+      this.editedIndex = this.paymentHistorys.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogProcess = true;
     },
 
     closeEdit() {
@@ -446,36 +423,91 @@ export default {
         this.editedIndex = -1;
       });
     },
+    closeProcess() {
+      this.dialogProcess = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      });
+    },
 
     async updateItem() {
       try {
-        await this.updateCow({
+        await this.updatePaymentRequest({
           id: this.editedItem._id,
-          cowData: this.editedItem,
+          paymentHistoryData: this.editedItem,
         });
-        this.fetchCows();
+        this.fetchPaymentHistorys();
         this.closeEdit();
       } catch (error) {
-        console.error("Error updating cow:", error);
+        console.error("Error updating customer:", error);
       }
     },
+    async print(item) {
+      const printContent = `
+    <div style="font-family: monospace; font-size: 12px; width: 58mm;">
+      <div style="text-align: center; margin-bottom: 10px;">
+        <h3 style="margin:0;">Mama Tsega Dairy Products</h3>
+        <p style="margin:0;">Tel: +251-914-759-258</p>
+        <p style="margin:0;">Mekelle, Ethiopia</p>
+        <p>------------------------------</p>
+      </div>
 
+      <p>Customer : ${item.customerId?.name || "N/A"}</p>
+      <p>Amount   : ${item.amount} ETB</p>
+      <p>Date     : ${$toEthiopianString(paymentDate)}</p>
+      <p>Ref No   : ${item.referenceNumber}</p>
+      <p>Status   : ${item.status}</p>
+      <p>------------------------------</p>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <p>*** Thank You! ***</p>
+      </div>
+    </div>
+  `;
+
+      const printWindow = window.open("", "", "width=400,height=600");
+      printWindow.document.write(`
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          @page {
+            size: 58mm auto; /* POS printer width */
+            margin: 0;       /* No margins */
+          }
+          body {
+            margin: 0;
+            padding: 5px;
+            font-family: monospace;
+            font-size: 12px;
+          }
+        </style>
+      </head>
+      <body>${printContent}</body>
+    </html>
+  `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    },
     // Delete Methods
     deleteItem(item) {
-      this.editedIndex = this.cows.indexOf(item);
+      this.editedIndex = this.paymentHistorys.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
 
     async deleteItemConfirm() {
-      const index = this.cows.indexOf(this.editedItem);
+      const index = this.paymentHistorys.indexOf(this.editedItem);
       try {
-        this.cows.splice(index, 1);
-        await this.deleteCow(this.editedItem._id);
-        this.fetchCows();
+        this.paymentHistorys.splice(index, 1);
+        await this.deleteCustomer(this.editedItem._id);
+        this.fetchPaymentHistorys();
       } catch (error) {
-        this.cows.splice(index, 0, this.editedItem);
-        console.error("Error deleting cow:", error);
+        this.paymentHistorys.splice(index, 0, this.editedItem);
+        console.error("Error deleting customer:", error);
       }
       this.closeDelete();
     },
@@ -491,6 +523,13 @@ export default {
     formatDate(date) {
       if (!date) return "";
       return new Date(date).toISOString().split("T")[0]; // Keeps only the YYYY-MM-DD part
+    },
+    formatText(snakeCaseStr) {
+      if (!snakeCaseStr) return "";
+      return snakeCaseStr
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
     },
   },
 };

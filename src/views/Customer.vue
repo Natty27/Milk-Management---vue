@@ -59,110 +59,105 @@
                     Add Customer
                   </v-btn>
                 </template>
-                <v-card>
+
+                <v-card
+                  class="w-full max-w-md sm:max-w-lg md:max-w-2xl bg-white rounded-xl shadow-xl overflow-hidden"
+                >
+                  <!-- Header -->
                   <div
-                    class="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 backdrop-blur-sm"
+                    class="bg-gradient-to-r from-deep-purple-accent-4 to-purple-600 p-4 text-black"
                   >
-                    <div
-                      class="bg-white rounded-xl shadow-xl overflow-hidden w-full max-w-md"
-                    >
-                      <div
-                        class="bg-gradient-to-r from-deep-purple-accent-4 to-purple-600 p-4 text-black"
+                    <div class="flex justify-between items-center">
+                      <h2 class="text-xl font-semibold">Add New Customer</h2>
+                      <v-btn
+                        icon
+                        @click="closeAdd"
+                        variant="text"
+                        color="white"
                       >
-                        <div class="flex justify-between items-center">
-                          <h2 class="text-xl font-semibold">
-                            Add New Customer
-                          </h2>
-                          <v-btn
-                            icon
-                            @click="closeAdd"
-                            variant="text"
-                            color="white"
-                          >
-                            <v-icon>mdi-close</v-icon>
-                          </v-btn>
-                        </div>
-                      </div>
-                      <div class="p-6">
-                        <v-form @submit.prevent="save(editedItem)">
-                          <!-- Add Customer Form Fields -->
-                          <div class="space-y-4">
-                            <v-text-field
-                              v-model="editedItem.name"
-                              label="Name *"
-                              variant="outlined"
-                              density="comfortable"
-                              type="text"
-                              required
-                            ></v-text-field>
-
-                            <v-text-field
-                              v-model="editedItem.amount"
-                              label="Amount (Liters) *"
-                              variant="outlined"
-                              density="comfortable"
-                              type="number"
-                              required
-                            ></v-text-field>
-
-                            <v-select
-                              v-model="editedItem.type"
-                              :items="options"
-                              item-title="text"
-                              item-value="value"
-                              label="Type *"
-                              variant="outlined"
-                              density="comfortable"
-                              required
-                            ></v-select>
-
-                            <v-text-field
-                              v-if="editedItem.type === 'contract'"
-                              v-model="editedItem.monthlyDueDay"
-                              label="Due Day *"
-                              variant="outlined"
-                              density="comfortable"
-                              type="number"
-                              required
-                            ></v-text-field>
-
-                            <v-text-field
-                              v-if="editedItem.type === 'contract'"
-                              v-model="editedItem.lastPaymentDate"
-                              label="Last Payment Date *"
-                              variant="outlined"
-                              density="comfortable"
-                              type="date"
-                              required
-                            ></v-text-field>
-
-                            <v-text-field
-                              v-model="editedItem.address"
-                              label="Address *"
-                              variant="outlined"
-                              density="comfortable"
-                              required
-                            ></v-text-field>
-                          </div>
-                          <div class="flex justify-end space-x-3 mt-6">
-                            <v-btn
-                              @click="closeAdd"
-                              variant="outlined"
-                              color="grey-darken-1"
-                            >
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                              type="submit"
-                              color="deep-purple-accent-4"
-                              variant="elevated"
-                            >
-                              Add Customer
-                            </v-btn>
-                          </div>
-                        </v-form>
-                      </div>
+                        <v-icon>mdi-close</v-icon>
+                      </v-btn>
                     </div>
+                  </div>
+
+                  <!-- Scrollable Form Section -->
+                  <div class="p-6 max-h-[80vh] overflow-y-auto">
+                    <v-form @submit.prevent="save(editedItem)">
+                      <!-- Add Customer Form Fields -->
+                      <div class="space-y-4">
+                        <v-text-field
+                          v-model="editedItem.name"
+                          label="Name *"
+                          variant="outlined"
+                          density="comfortable"
+                          type="text"
+                          required
+                        ></v-text-field>
+
+                        <v-text-field
+                          v-model="editedItem.amount"
+                          label="Payment Amount (ETB) *"
+                          variant="outlined"
+                          density="comfortable"
+                          type="number"
+                          required
+                        ></v-text-field>
+
+                        <v-select
+                          v-model="editedItem.type"
+                          :items="options"
+                          item-title="text"
+                          item-value="value"
+                          label="Type *"
+                          variant="outlined"
+                          density="comfortable"
+                          required
+                        ></v-select>
+
+                        <v-text-field
+                          v-if="editedItem.type === 'contract'"
+                          v-model="editedItem.monthlyDueDay"
+                          label="Due Day *"
+                          variant="outlined"
+                          density="comfortable"
+                          type="number"
+                          required
+                        ></v-text-field>
+
+                        <!-- Ethiopian Date Picker -->
+                        <EthiopianDatePicker
+                          v-if="editedItem.type === 'contract'"
+                          v-model="editedItem.lastPaymentDate"
+                          label="Last Payment Date"
+                        />
+
+                        <v-text-field
+                          v-model="editedItem.address"
+                          label="Address *"
+                          variant="outlined"
+                          density="comfortable"
+                          required
+                        ></v-text-field>
+                      </div>
+
+                      <!-- Actions -->
+                      <div class="flex justify-end space-x-3 mt-6">
+                        <v-btn
+                          @click="closeAdd"
+                          variant="outlined"
+                          color="grey-darken-1"
+                        >
+                          Cancel
+                        </v-btn>
+                        <v-btn
+                          type="submit"
+                          color="deep-purple-accent-4"
+                          variant="elevated"
+                        >
+                          Add Customer
+                        </v-btn>
+                      </div>
+                    </v-form>
                   </div>
                 </v-card>
               </v-dialog>
@@ -206,7 +201,7 @@
 
                             <v-text-field
                               v-model="editedItem.amount"
-                              label="Amount (Liters) *"
+                              label="Payment Amount (ETB) *"
                               variant="outlined"
                               density="comfortable"
                               type="number"
@@ -245,15 +240,12 @@
                               required
                             ></v-text-field>
 
-                            <v-text-field
+                            <!-- Ethiopian Date Picker -->
+                            <EthiopianDatePicker
                               v-if="editedItem.type === 'contract'"
                               v-model="editedItem.lastPaymentDate"
-                              label="Last Payment Date *"
-                              variant="outlined"
-                              density="comfortable"
-                              type="date"
-                              required
-                            ></v-text-field>
+                              label="Last Payment Date"
+                            />
 
                             <v-text-field
                               v-model="editedItem.address"
@@ -322,6 +314,15 @@
                               type="text"
                               required
                               disabled
+                            ></v-text-field>
+
+                            <v-text-field
+                              v-model="editedItem.amount"
+                              label="Amount *"
+                              variant="outlined"
+                              density="comfortable"
+                              type="number"
+                              required
                             ></v-text-field>
                           </div>
                           <div class="flex justify-end space-x-3 mt-6">
@@ -438,7 +439,8 @@
             {{ formatText(item.type) }}
           </template>
           <template v-slot:item.lastPaymentDate="{ item }">
-            {{ formatDate(item.lastPaymentDate) }}
+            <!-- {{ formatDate(item.lastPaymentDate) }} -->
+            {{ $toEthiopianString(item.lastPaymentDate) }}
           </template>
 
           <!-- No Data Slot -->
@@ -464,8 +466,10 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import EthiopianDatePicker from "@/components/EthiopianDatePicker.vue";
 
 export default {
+  components: { EthiopianDatePicker },
   data: () => ({
     dialogAdd: false, // Separate dialog for Add Customer
     dialogEdit: false, // Separate dialog for Edit Cattle
@@ -567,6 +571,7 @@ export default {
       const payload = {
         name: this.editedItem.name,
         address: this.editedItem.address,
+        date: this.editedItem.date,
         amount: Number(this.editedItem.amount),
         type: this.editedItem.type,
         monthlyDueDay: Number(this.editedItem.monthlyDueDay) || null,
@@ -628,6 +633,7 @@ export default {
         console.log("Making payment for customer ID:", this.editedItem._id);
         await this.processMakePayment({
           id: this.editedItem._id,
+          amount: this.editedItem.amount,
         });
         this.fetchCustomers();
         this.closeProcess();

@@ -11,7 +11,7 @@
       <v-card flat class="rounded-lg shadow-sm border">
         <v-data-table
           :headers="headers"
-          :items="cows"
+          :items="providers"
           :search="search"
           :sort-by="[{ key: 'title', order: 'asc' }]"
           class="elevation-0"
@@ -28,15 +28,15 @@
             <v-toolbar flat class="px-4 py-3 bg-white rounded-t-lg">
               <v-toolbar-title class="text-xl font-semibold text-gray-800">
                 <v-icon class="mr-2" color="deep-purple-accent-4"
-                  >mdi-cow</v-icon
+                  >mdi-cash</v-icon
                 >
-                Cattle Management
+                Providers
               </v-toolbar-title>
               <v-divider class="mx-4" inset vertical></v-divider>
               <v-spacer></v-spacer>
               <v-text-field
                 v-model="search"
-                label="Search cattle..."
+                label="Search ..."
                 prepend-inner-icon="mdi-magnify"
                 clearable
                 single-line
@@ -45,7 +45,7 @@
                 hide-details
                 class="w-64"
               ></v-text-field>
-              <!-- Add Cattle Dialog -->
+              <!-- Add Provider Dialog -->
               <v-dialog v-model="dialogAdd" max-width="600px">
                 <template v-slot:activator="{ props }">
                   <v-btn
@@ -56,7 +56,7 @@
                     variant="elevated"
                     v-bind="props"
                   >
-                    Add Cattle
+                    Add Provider
                   </v-btn>
                 </template>
                 <v-card>
@@ -70,7 +70,9 @@
                         class="bg-gradient-to-r from-deep-purple-accent-4 to-purple-600 p-4 text-black"
                       >
                         <div class="flex justify-between items-center">
-                          <h2 class="text-xl font-semibold">Add New Cattle</h2>
+                          <h2 class="text-xl font-semibold">
+                            Add New Provider
+                          </h2>
                           <v-btn
                             icon
                             @click="closeAdd"
@@ -83,32 +85,32 @@
                       </div>
                       <div class="p-6">
                         <v-form @submit.prevent="save(editedItem)">
-                          <!-- Add Cattle Form Fields -->
+                          <!-- Add Provider Form Fields -->
                           <div class="space-y-4">
                             <v-text-field
                               v-model="editedItem.name"
-                              label="Name*"
+                              label="Name *"
                               variant="outlined"
                               density="comfortable"
+                              type="text"
                               required
                             ></v-text-field>
 
                             <v-text-field
-                              v-model="editedItem.breed"
-                              label="Breed*"
+                              v-model="editedItem.contact_person"
+                              label="Contact Person"
                               variant="outlined"
                               density="comfortable"
-                              required
+                              type="text"
                             ></v-text-field>
 
-                            <!-- Ethiopian Date Picker -->
-                            <EthiopianDatePicker
-                              v-model="editedItem.birthDate"
-                              label="Birth Date"
-                            />
-
-                            <!-- Include all your form fields here -->
-                            <!-- This is your "Add" specific form -->
+                            <v-text-field
+                              v-model="editedItem.address"
+                              label="Address *"
+                              variant="outlined"
+                              density="comfortable"
+                              type="text"
+                            ></v-text-field>
                           </div>
                           <div class="flex justify-end space-x-3 mt-6">
                             <v-btn
@@ -123,7 +125,7 @@
                               color="deep-purple-accent-4"
                               variant="elevated"
                             >
-                              Add Cattle
+                              Add Provider
                             </v-btn>
                           </div>
                         </v-form>
@@ -146,9 +148,7 @@
                         class="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white"
                       >
                         <div class="flex justify-between items-center">
-                          <h2 class="text-xl font-semibold">
-                            Edit Cattle Details
-                          </h2>
+                          <h2 class="text-xl font-semibold">Edit Details</h2>
                           <v-btn
                             icon
                             @click="closeEdit"
@@ -165,48 +165,28 @@
                           <div class="space-y-4">
                             <v-text-field
                               v-model="editedItem.name"
-                              label="Name*"
+                              label="Name *"
                               variant="outlined"
                               density="comfortable"
+                              type="text"
                               required
                             ></v-text-field>
 
                             <v-text-field
-                              v-model="editedItem.breed"
-                              label="Breed*"
+                              v-model="editedItem.contact_person"
+                              label="Contact Person"
                               variant="outlined"
                               density="comfortable"
-                              required
+                              type="text"
                             ></v-text-field>
 
-                            <!-- <v-text-field
-                              v-model="editedItem.birthDate"
-                              label="Birth Date*"
+                            <v-text-field
+                              v-model="editedItem.address"
+                              label="Address *"
                               variant="outlined"
                               density="comfortable"
-                              type="date"
-                              required
-                            ></v-text-field> -->
-
-                            <EthiopianDatePicker
-                              v-model="editedItem.birthDate"
-                              label="Birth Date"
-                            />
-
-                            <v-select
-                              v-model="editedItem.status"
-                              :items="statusOptions"
-                              item-title="text"
-                              item-value="value"
-                              label="Status*"
-                              variant="outlined"
-                              density="comfortable"
-                              required
-                            ></v-select>
-
-                            <!-- Include all your form fields here -->
-                            <!-- This is your "Edit" specific form -->
-                            <!-- You can make some fields read-only if needed -->
+                              type="text"
+                            ></v-text-field>
                           </div>
                           <div class="flex justify-end space-x-3 mt-6">
                             <v-btn
@@ -302,20 +282,26 @@
               </span>
             </div>
           </template>
-          <template v-slot:item.birthDate="{ item }">
-            {{ $toEthiopianString(item.birthDate) }}
+          <template v-slot:item.category="{ item }">
+            {{ formatText(item.category) }}
+          </template>
+          <template v-slot:item.type="{ item }">
+            {{ formatText(item.type) }}
+          </template>
+          <template v-slot:item.date="{ item }">
+            {{ $toEthiopianString(item.date) }}
           </template>
 
           <!-- No Data Slot -->
           <template v-slot:no-data>
             <div class="py-8 text-center text-gray-500">
-              <v-icon size="64" color="grey-lighten-2">mdi-cow-off</v-icon>
-              <div class="text-lg mt-2">No cattle records found</div>
+              <v-icon size="64" color="grey-lighten-2">mdi-cash-off</v-icon>
+              <div class="text-lg mt-2">No records found</div>
               <v-btn
                 color="deep-purple-accent-4"
                 variant="outlined"
                 class="mt-4"
-                @click="fetchCows"
+                @click="fetchProviders"
               >
                 Refresh
               </v-btn>
@@ -328,21 +314,18 @@
 </template>
 
 <script>
-import EthiopianDatePicker from "@/components/EthiopianDatePicker.vue";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
-  components: { EthiopianDatePicker },
   data: () => ({
-    dialogAdd: false, // Separate dialog for Add Cattle
+    dialogAdd: false, // Separate dialog for Add Provider
     dialogEdit: false, // Separate dialog for Edit Cattle
     dialogDelete: false,
     drawer: false,
     headers: [
       { title: "Name", align: "start", key: "name" },
-      { title: "Status", key: "status" },
-      { title: "Breed", key: "breed" },
-      { title: "Birth Date", key: "birthDate" },
+      { title: "Contact Person", key: "contact_person" },
+      { title: "Address", key: "address" },
       { title: "Actions", key: "actions", sortable: false, width: "120px" },
     ],
     search: "",
@@ -361,18 +344,50 @@ export default {
       shelfNo: "",
       availableForOutsideReaders: false,
     },
-    statusOptions: [
-      { text: "Active", value: "active" },
-      { text: "Sick", value: "sick" },
-      { text: "Dry", value: "dry" },
-      { text: "Sold", value: "sold" },
-      { text: "Dead", value: "dead" },
+    category: [
+      { text: "Feed", value: "feed" },
+      { text: "Medical", value: "medical" },
+      { text: "Labor", value: "labor" },
+      { text: "Maintenance", value: "maintenance" },
+      { text: "Other", value: "other" },
+    ],
+    type: [
+      // Feed Providers
+      { text: "Cattle Feed", value: "cattle_feed" },
+      { text: "Poultry Feed", value: "poultry_feed" },
+      { text: "Hay", value: "hay" },
+      { text: "Supplements", value: "supplements" },
+      { text: "Minerals", value: "minerals" },
+
+      // Medical Providers
+      { text: "Vaccination", value: "vaccination" },
+      { text: "Vet Visit", value: "vet_visit" },
+      { text: "Medicine", value: "medicine" },
+      { text: "Deworming", value: "deworming" },
+      { text: "Surgery", value: "surgery" },
+
+      // Labor Providers
+      { text: "Wages", value: "wages" },
+      { text: "Contract Work", value: "contract_work" },
+      { text: "Overtime", value: "overtime" },
+      { text: "Seasonal Worker", value: "seasonal_worker" },
+
+      // Maintenance Providers
+      { text: "Barn Repair", value: "barn_repair" },
+      { text: "Fence Repair", value: "fence_repair" },
+      { text: "Equipment Service", value: "equipment_service" },
+      { text: "Vehicle Maintenance", value: "vehicle_maintenance" },
+
+      // Other Providers
+      { text: "Transportation", value: "transportation" },
+      { text: "Utilities", value: "utilities" },
+      { text: "Insurance", value: "insurance" },
+      { text: "Miscellaneous", value: "miscellaneous" },
     ],
   }),
 
   computed: {
-    ...mapGetters("cow", ["loading", "error", "cows"]),
-    ...mapGetters("category", ["loading", "error", "categorys"]),
+    ...mapGetters("provider", ["loading", "error", "providers"]),
   },
 
   watch: {
@@ -388,23 +403,22 @@ export default {
   },
 
   created() {
-    this.fetchCows();
-    this.fetchCategorys();
+    this.fetchProviders();
   },
 
   methods: {
-    ...mapActions("cow", ["getAllCows", "deleteCow", "addCow", "updateCow"]),
-    ...mapActions("category", ["getAllCategorys"]),
+    ...mapActions("provider", [
+      "getAllProviders",
+      "deleteProvider",
+      "addProvider",
+      "updateProvider",
+    ]),
 
-    fetchCows() {
-      this.getAllCows();
+    fetchProviders() {
+      this.getAllProviders();
     },
 
-    fetchCategorys() {
-      this.getAllCategorys();
-    },
-
-    // Add Cattle Methods
+    // Add Provider Methods
     openAdd() {
       this.editedItem = Object.assign({}, this.defaultItem);
       this.dialogAdd = true;
@@ -420,21 +434,21 @@ export default {
     async save() {
       const payload = {
         name: this.editedItem.name,
-        breed: this.editedItem.breed,
-        //birthDate: new Date(this.editedItem.birthDate), // 👈 convert string to Date
+        contact_person: this.editedItem.contact_person,
+        address: this.editedItem.address,
       };
       try {
-        await this.addCow(payload);
-        this.fetchCows();
+        await this.addProvider(payload);
+        this.fetchProviders();
         this.closeAdd();
       } catch (error) {
-        console.error("Error adding cow:", error);
+        console.error("Error adding provider:", error);
       }
     },
 
     // Edit Cattle Methods
     editItem(item) {
-      this.editedIndex = this.cows.indexOf(item);
+      this.editedIndex = this.providers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogEdit = true;
     },
@@ -449,33 +463,33 @@ export default {
 
     async updateItem() {
       try {
-        await this.updateCow({
+        await this.updateProvider({
           id: this.editedItem._id,
-          cowData: this.editedItem,
+          providerData: this.editedItem,
         });
-        this.fetchCows();
+        this.fetchProviders();
         this.closeEdit();
       } catch (error) {
-        console.error("Error updating cow:", error);
+        console.error("Error updating provider:", error);
       }
     },
 
     // Delete Methods
     deleteItem(item) {
-      this.editedIndex = this.cows.indexOf(item);
+      this.editedIndex = this.providers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
 
     async deleteItemConfirm() {
-      const index = this.cows.indexOf(this.editedItem);
+      const index = this.providers.indexOf(this.editedItem);
       try {
-        this.cows.splice(index, 1);
-        await this.deleteCow(this.editedItem._id);
-        this.fetchCows();
+        this.providers.splice(index, 1);
+        await this.deleteProvider(this.editedItem._id);
+        this.fetchProviders();
       } catch (error) {
-        this.cows.splice(index, 0, this.editedItem);
-        console.error("Error deleting cow:", error);
+        this.providers.splice(index, 0, this.editedItem);
+        console.error("Error deleting provider:", error);
       }
       this.closeDelete();
     },
@@ -491,6 +505,13 @@ export default {
     formatDate(date) {
       if (!date) return "";
       return new Date(date).toISOString().split("T")[0]; // Keeps only the YYYY-MM-DD part
+    },
+    formatText(snakeCaseStr) {
+      if (!snakeCaseStr) return "";
+      return snakeCaseStr
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
     },
   },
 };

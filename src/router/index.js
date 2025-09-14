@@ -15,9 +15,13 @@ import addIssue from "../views/addIssue.vue";
 import myIssues from "../views/myIssues.vue";
 import category from "../views/Category.vue";
 import settings from "../views/Settings.vue";
+import Providers from "../views/Provider.vue";
+import ProcessingRecords from "@/views/ProcessingRecord.vue";
 
 import notFound from "../views/notFound.vue";
 import store from "../store";
+import PaymentHistory from "@/views/PaymentHistory.vue";
+import ChangePassword from "@/views/admin/ChangePassword.vue";
 
 const routes = [
   {
@@ -29,6 +33,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: Login,
+  },
+  {
+    path: "/changePassword",
+    name: "changePassword",
+    component: ChangePassword,
   },
   {
     path: "/register",
@@ -54,6 +63,24 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/processingRecords",
+    name: "processingRecord",
+    component: ProcessingRecords,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cows",
+    name: "cow",
+    component: Cows,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/providers",
+    name: "provider",
+    component: Providers,
+    meta: { requiresAuth: true },
+  },
+  {
     path: "/milkingRecords",
     name: "milkingRecord",
     component: MilkingRecords,
@@ -75,6 +102,12 @@ const routes = [
     path: "/sales",
     name: "sale",
     component: Sale,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/paymentHistory",
+    name: "paymentHistory",
+    component: PaymentHistory,
     meta: { requiresAuth: true },
   },
   {

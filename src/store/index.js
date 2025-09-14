@@ -11,6 +11,8 @@ import notification from "./modules/notification";
 import setting from "./modules/setting";
 import log from "./modules/log";
 import report from "./modules/report";
+import provider from "./modules/provider";
+import processingRecord from "./modules/processingRecord";
 
 export default createStore({
   modules: {
@@ -26,5 +28,7 @@ export default createStore({
     setting,
     log,
     report,
+    provider,
+    processingRecord,
   },
 });

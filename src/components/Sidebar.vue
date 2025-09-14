@@ -18,7 +18,7 @@
   >
     <!-- Sidebar Header -->
     <div class="p-5 border-b border-gray-200 text-center">
-      <h2 class="text-xl font-semibold text-gray-800 m-0">My App</h2>
+      <h2 class="text-xl font-semibold text-gray-800 m-0">Farm Management</h2>
     </div>
 
     <!-- Navigation Links -->
@@ -44,6 +44,14 @@
           user?.name || getUsernameFromStorage() || "User Name"
         }}</span>
       </div>
+      <router-link
+        to="/changePassword"
+        class="flex items-center w-full p-2 text-red-500 rounded-lg hover:bg-red-50 transition-colors duration-200"
+      >
+        <i class="mdi mdi-lock-reset mr-3 text-lg"></i>
+        <span class="text-sm font-medium">Change Password</span>
+      </router-link>
+
       <button
         @click="logoutHandler"
         class="flex items-center w-full p-2 text-red-500 rounded-lg hover:bg-red-50 transition-colors duration-200"
@@ -71,6 +79,16 @@ export default {
           icon: "mdi mdi-account-multiple",
         },
         {
+          title: "Milk Providers",
+          path: "/providers",
+          icon: "mdi mdi-account-multiple",
+        },
+        {
+          title: "Processing Records",
+          path: "/processingRecords",
+          icon: "mdi mdi-factory",
+        },
+        {
           title: "Milking Records",
           path: "/milkingRecords",
           icon: "mdi mdi-cow",
@@ -83,6 +101,11 @@ export default {
         {
           title: "Sales",
           path: "/sales",
+          icon: "mdi mdi-cash",
+        },
+        {
+          title: "Payment History",
+          path: "/paymentHistory",
           icon: "mdi mdi-cash",
         },
         // { title: "Settings", path: "/settings", icon: "mdi mdi-cog" },

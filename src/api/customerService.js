@@ -43,11 +43,23 @@ export default {
     }
   },
 
-  async processMakePayment(id) {
+  async getPaymentHistorys() {
+    try {
+      const response = await customerService.get(`${API_URL}/payment-history`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async processMakePayment(id, amount) {
     console.log("Processing payment for customer ID:", id);
     try {
       const response = await customerService.post(
-        `${API_URL}/customers/${id}/payment`
+        `${API_URL}/customers/${id}/payment`,
+        {
+          amount: amount,
+        }
       );
       return response.data;
     } catch (error) {
@@ -79,6 +91,18 @@ export default {
       const response = await customerService.patch(
         `${API_URL}/customers/${id}`,
         customerData
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async updatePaymentRequest(id, paymentHistoryData) {
+    try {
+      const response = await customerService.patch(
+        `${API_URL}/payment-history/${id}`,
+        paymentHistoryData
       );
       return response.data;
     } catch (error) {

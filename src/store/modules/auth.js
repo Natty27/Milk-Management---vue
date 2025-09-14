@@ -1,3 +1,4 @@
+import ChangePassword from "@/views/admin/ChangePassword.vue";
 import {
   login,
   register,
@@ -5,6 +6,7 @@ import {
   getUserByIDAPI,
   getUserByNameAPI,
   getCurrentUserAPI,
+  changePassword,
 } from "../../api/authService";
 import {
   LOGIN_REQUEST,
@@ -25,6 +27,9 @@ import {
   GET_CURRENT_USER_REQUEST,
   GET_CURRENT_USER_SUCCESS,
   GET_CURRENT_USER_FAILURE,
+  CHANGE_PASSWORD_REQUEST,
+  CHANGE_PASSWORD_SUCCESS,
+  CHANGE_PASSWORD_FAILURE,
 } from "../../constants/actionTypes";
 import router from "../../router";
 
@@ -128,6 +133,19 @@ const mutations = {
     state.loading = false;
     state.error = error;
   },
+  [CHANGE_PASSWORD_REQUEST](state) {
+    state.loading = true;
+    state.error = null;
+  },
+  [CHANGE_PASSWORD_SUCCESS](state) {
+    state.loading = false;
+    state.error = null;
+  },
+  [CHANGE_PASSWORD_FAILURE](state, error) {
+    state.loading = false;
+    state.error = error;
+  },
+
   logout(state) {
     state.token = "";
     state.user = null;
@@ -169,6 +187,20 @@ const actions = {
       commit(REGISTER_FAILURE, error);
     }
   },
+
+  async changePassword({ commit }, userData) {
+    commit(CHANGE_PASSWORD_REQUEST);
+    try {
+      // Call your API to change password
+      await changePassword(userData); // Assuming this returns a simple success response
+      commit(CHANGE_PASSWORD_SUCCESS);
+      // Do not redirect; the component will show success message
+    } catch (error) {
+      console.error("Change password error:", error);
+      commit(CHANGE_PASSWORD_FAILURE, error);
+    }
+  },
+
   async getAllUsers({ commit }) {
     commit(GET_USERS_REQUEST);
     try {

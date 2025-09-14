@@ -6,6 +6,7 @@ const state = {
   loading: false,
   error: null,
   customers: [],
+  paymentHistorys: [],
   overDueCustomers: [],
   selectedCustomer: null,
 };
@@ -14,6 +15,7 @@ const getters = {
   loading: (state) => state.loading,
   error: (state) => state.error,
   customers: (state) => state.customers,
+  paymentHistorys: (state) => state.paymentHistorys,
   overDueCustomers: (state) => state.overDueCustomers,
   selectedCustomer: (state) => state.selectedCustomer,
 };
@@ -46,6 +48,20 @@ const actions = {
     }
   },
 
+  async getPaymentHistorys({ commit }) {
+    commit("setLoading", true);
+    commit("setError", null);
+    try {
+      const response = await customerService.getPaymentHistorys();
+      const customers = response;
+      commit("setPaymentHistorys", customers);
+      commit("setLoading", false);
+    } catch (error) {
+      commit("setError", error);
+      commit("setLoading", false);
+    }
+  },
+
   async getOverDueCustomers({ commit }) {
     commit("setLoading", true);
     commit("setError", null);
@@ -60,13 +76,13 @@ const actions = {
     }
   },
 
-  async processMakePayment({ commit }, { id }) {
+  async processMakePayment({ commit }, { id, amount }) {
     console.log("Action processMakePayment called with ID:", id);
 
     commit("setLoading", true);
     commit("setError", null);
     try {
-      await customerService.processMakePayment(id);
+      await customerService.processMakePayment(id, amount);
       commit("setLoading", false);
       await router.push({ name: "customer" });
     } catch (error) {
@@ -115,6 +131,20 @@ const actions = {
     }
   },
 
+  async updatePaymentRequest({ commit }, { id, paymentHistoryData }) {
+    commit("setLoading", true);
+    commit("setError", null);
+    try {
+      await customerService.updatePaymentRequest(id, paymentHistoryData);
+      // Optionally refresh the customer list or selected customer
+      await dispatch("getPaymentHistorys"); // Refresh the customer list
+      commit("setLoading", false);
+    } catch (error) {
+      commit("setError", error);
+      commit("setLoading", false);
+    }
+  },
+
   async deleteCustomer({ commit }, id) {
     commit("setLoading", true);
     commit("setError", null);
@@ -139,6 +169,10 @@ const mutations = {
   setCustomers(state, customers) {
     state.customers = customers;
   },
+  setPaymentHistorys(state, customers) {
+    state.paymentHistorys = customers;
+  },
+
   setOverDueCustomers(state, customers) {
     state.overDueCustomers = customers;
   },

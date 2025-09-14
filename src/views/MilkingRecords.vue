@@ -10,7 +10,7 @@
       <v-card flat class="rounded-lg shadow-sm border">
         <v-data-table
           :headers="headers"
-          :items="milkingRecords"
+          :items="formattedMilkingRecords"
           :search="search"
           :sort-by="[{ key: 'title', order: 'asc' }]"
           class="elevation-0"
@@ -85,6 +85,18 @@
                           <!-- Add Record Form Fields -->
                           <div class="space-y-4">
                             <v-select
+                              v-model="editedItem.source_type"
+                              :items="milkSources"
+                              item-title="text"
+                              item-value="value"
+                              label="Source Type *"
+                              variant="outlined"
+                              density="comfortable"
+                              required
+                            ></v-select>
+
+                            <v-select
+                              v-if="editedItem.source_type === 'own_farm'"
                               v-model="editedItem.cow_id"
                               :items="cows"
                               item-title="name"
@@ -92,12 +104,35 @@
                               label="Cow*"
                               variant="outlined"
                               density="comfortable"
-                              required
+                            ></v-select>
+
+                            <v-select
+                              v-if="
+                                editedItem.source_type === 'external_provider'
+                              "
+                              v-model="editedItem.provider_id"
+                              :items="providers"
+                              item-title="name"
+                              item-value="_id"
+                              label="Provider *"
+                              variant="outlined"
+                              density="comfortable"
                             ></v-select>
 
                             <v-text-field
                               v-model="editedItem.amount"
                               label="Amount*"
+                              variant="outlined"
+                              density="comfortable"
+                              required
+                            ></v-text-field>
+
+                            <v-text-field
+                              v-if="
+                                editedItem.source_type === 'external_provider'
+                              "
+                              v-model="editedItem.cost_price"
+                              label="Cost Price*"
                               variant="outlined"
                               density="comfortable"
                               required
@@ -180,6 +215,18 @@
                           <!-- Edit Record Form Fields -->
                           <div class="space-y-4">
                             <v-select
+                              v-model="editedItem.source_type"
+                              :items="milkSources"
+                              item-title="text"
+                              item-value="value"
+                              label="Source Type *"
+                              variant="outlined"
+                              density="comfortable"
+                              required
+                            ></v-select>
+
+                            <v-select
+                              v-if="editedItem.source_type === 'own_farm'"
                               v-model="editedItem.cow_id"
                               :items="cows"
                               item-title="name"
@@ -187,7 +234,19 @@
                               label="Cow*"
                               variant="outlined"
                               density="comfortable"
-                              required
+                            ></v-select>
+
+                            <v-select
+                              v-if="
+                                editedItem.source_type === 'external_provider'
+                              "
+                              v-model="editedItem.provider_id"
+                              :items="providers"
+                              item-title="name"
+                              item-value="_id"
+                              label="Provider *"
+                              variant="outlined"
+                              density="comfortable"
                             ></v-select>
 
                             <v-text-field
@@ -198,6 +257,16 @@
                               required
                             ></v-text-field>
 
+                            <v-text-field
+                              v-if="
+                                editedItem.source_type === 'external_provider'
+                              "
+                              v-model="editedItem.cost_price"
+                              label="Cost Price*"
+                              variant="outlined"
+                              density="comfortable"
+                              required
+                            ></v-text-field>
                             <v-select
                               v-model="editedItem.time"
                               :items="timeOptions"
@@ -317,7 +386,7 @@
             </div>
           </template>
           <template v-slot:item.createdAt="{ item }">
-            {{ formatDate(item.createdAt) }}
+            {{ $toEthiopianString(item.createdAt) }}
           </template>
 
           <!-- No Data Slot -->
@@ -351,13 +420,15 @@ export default {
     dialogDelete: false,
     drawer: false,
     headers: [
-      { title: "Cow", align: "start", key: "cow_id.name" },
+      { title: "Cow / Provider", align: "start", key: "cowOrProviderName" },
       { title: "Amount", key: "amount" },
       { title: "Time", key: "time" },
+      { title: "Cost", key: "cost_price" },
       { title: "Note", key: "notes" },
       { title: "Created Date", key: "createdAt" },
       { title: "Actions", key: "actions", sortable: false, width: "120px" },
     ],
+
     search: "",
     editedIndex: -1,
     editedItem: {
@@ -379,11 +450,26 @@ export default {
       { text: "Morning", value: "morning" },
       { text: "Evening", value: "evening" },
     ],
+
+    milkSources: [
+      { text: "Own Farm", value: "own_farm" },
+      { text: "External Provider", value: "external_provider" },
+    ],
   }),
 
   computed: {
     ...mapGetters("milkingRecord", ["loading", "error", "milkingRecords"]),
     ...mapGetters("cow", ["loading", "error", "cows"]),
+    ...mapGetters("provider", ["loading", "error", "providers"]),
+
+    formattedMilkingRecords() {
+      return this.milkingRecords.map((record) => ({
+        ...record,
+        cowOrProviderName: record.cow_id
+          ? record.cow_id.name
+          : record.provider_id?.name || "",
+      }));
+    },
   },
 
   watch: {
@@ -401,6 +487,7 @@ export default {
   created() {
     this.fetchMilkingRecords();
     this.fetchCows();
+    this.fetchProviders();
   },
 
   methods: {
@@ -411,6 +498,7 @@ export default {
       "updateMilkingRecord",
     ]),
     ...mapActions("cow", ["getAllCows"]),
+    ...mapActions("provider", ["getAllProviders"]),
 
     fetchMilkingRecords() {
       this.getAllMilkingRecords();
@@ -418,6 +506,9 @@ export default {
 
     fetchCows() {
       this.getAllCows();
+    },
+    fetchProviders() {
+      this.getAllProviders();
     },
 
     // Add Record Methods
@@ -434,12 +525,22 @@ export default {
     },
 
     async save() {
+      // Base payload
       const payload = {
-        cow_id: this.editedItem.cow_id,
         amount: Number(this.editedItem.amount), // Convert to number
         time: this.editedItem.time,
         notes: this.editedItem.notes,
+        source_type: this.editedItem.source_type,
+        date: this.editedItem.date || new Date(), // Use current date if not provided
       };
+
+      // Add conditional fields
+      if (this.editedItem.source_type === "own_farm") {
+        payload.cow_id = this.editedItem.cow_id;
+      } else if (this.editedItem.source_type === "external_provider") {
+        payload.provider_id = this.editedItem.provider_id;
+        payload.cost_price = Number(this.editedItem.cost_price); // Include cost_price
+      }
 
       try {
         await this.addMilkingRecord(payload);

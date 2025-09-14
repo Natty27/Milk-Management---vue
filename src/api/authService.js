@@ -27,6 +27,27 @@ export const register = async (userData) => {
   }
 };
 
+export const changePassword = async (userData) => {
+  try {
+    const token = localStorage.getItem("token"); // or whatever key you use
+
+    const response = await authService.put("/auth/change-password", userData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data; // usually success message
+  } catch (error) {
+    // Pass clean error to Vuex
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    } else {
+      throw error;
+    }
+  }
+};
+
 export const getAllUsersAPI = async () => {
   try {
     const response = await authService.get("/users/");

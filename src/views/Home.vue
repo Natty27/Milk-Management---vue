@@ -58,7 +58,7 @@
           Select Date Range
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
+          <!-- <div>
             <label class="block text-sm font-medium text-gray-700 mb-2"
               >Start Date</label
             >
@@ -78,6 +78,22 @@
               v-model="endDate"
               @change="applyDateFilter"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div> -->
+
+          <div>
+            <EthiopianDatePicker
+              v-model="startDate"
+              label="Start Date"
+              @update:modelValue="applyDateFilter"
+            />
+          </div>
+
+          <div>
+            <EthiopianDatePicker
+              v-model="endDate"
+              label="End Date"
+              @update:modelValue="applyDateFilter"
             />
           </div>
         </div>
@@ -478,6 +494,7 @@
 import { mapActions, mapGetters } from "vuex";
 import { Pie, Bar, Line } from "vue-chartjs";
 import OverdueCustomers from "@/components/OverdueCustomers.vue";
+import EthiopianDatePicker from "@/components/EthiopianDatePicker.vue";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -521,7 +538,6 @@ const CowIcon = {
 
 export default {
   name: "ReportsDashboard",
-
   components: {
     Pie,
     Bar,
@@ -534,6 +550,7 @@ export default {
     HeartIcon,
     CowIcon,
     OverdueCustomers,
+    EthiopianDatePicker,
   },
 
   data() {

@@ -426,7 +426,7 @@
             {{ formatText(item.type) }}
           </template>
           <template v-slot:item.date="{ item }">
-            {{ formatDate(item.date) }}
+            {{ $toEthiopianString(item.date) }}
           </template>
 
           <!-- No Data Slot -->
