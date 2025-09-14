@@ -17,6 +17,7 @@ import category from "../views/Category.vue";
 import settings from "../views/Settings.vue";
 import Providers from "../views/Provider.vue";
 import ProcessingRecords from "@/views/ProcessingRecord.vue";
+import Inventory from "@/views/Inventory.vue";
 
 import notFound from "../views/notFound.vue";
 import store from "../store";
@@ -72,6 +73,12 @@ const routes = [
     path: "/cows",
     name: "cow",
     component: Cows,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/inventory",
+    name: "inventory",
+    component: Inventory,
     meta: { requiresAuth: true },
   },
   {

@@ -108,6 +108,11 @@ export default {
           path: "/paymentHistory",
           icon: "mdi mdi-cash",
         },
+        {
+          title: "Inventory",
+          path: "/inventory",
+          icon: "mdi mdi-store",
+        },
         // { title: "Settings", path: "/settings", icon: "mdi mdi-cog" },
         // { title: "Calendar", path: "/calendar", icon: "mdi mdi-calendar" },
         // { title: "Files", path: "/files", icon: "mdi mdi-folder" },

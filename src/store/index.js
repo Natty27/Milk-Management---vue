@@ -13,6 +13,7 @@ import log from "./modules/log";
 import report from "./modules/report";
 import provider from "./modules/provider";
 import processingRecord from "./modules/processingRecord";
+import inventory from "./modules/inventory";
 
 export default createStore({
   modules: {
@@ -30,5 +31,6 @@ export default createStore({
     report,
     provider,
     processingRecord,
+    inventory,
   },
 });
