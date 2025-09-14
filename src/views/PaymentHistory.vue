@@ -444,49 +444,56 @@ export default {
       }
     },
     async print(item) {
+      const paymentDate = item.paymentDate;
+      console.log("Printing item:", item);
+
       const printContent = `
-    <div style="font-family: monospace; font-size: 12px; width: 58mm;">
-      <div style="text-align: center; margin-bottom: 10px;">
-        <h3 style="margin:0;">Mama Tsega Dairy Products</h3>
-        <p style="margin:0;">Tel: +251-914-759-258</p>
-        <p style="margin:0;">Mekelle, Ethiopia</p>
-        <p>------------------------------</p>
-      </div>
-
-      <p>Customer : ${item.customerId?.name || "N/A"}</p>
-      <p>Amount   : ${item.amount} ETB</p>
-      <p>Date     : ${$toEthiopianString(paymentDate)}</p>
-      <p>Ref No   : ${item.referenceNumber}</p>
-      <p>Status   : ${item.status}</p>
+  <div style="font-family: monospace; font-size: 14px; width: 58mm;">
+    <div style="text-align: center; margin-bottom: 10px;">
+      <h3 style="margin:0;">Mama Tsega Dairy Products</h3>
+      <p style="margin:0;">Tel: +251-914-759-258</p>
+      <p style="margin:0;">Mekelle, Ethiopia</p>
       <p>------------------------------</p>
-
-      <div style="text-align: center; margin-top: 10px;">
-        <p>*** Thank You! ***</p>
-      </div>
     </div>
-  `;
+
+    <p>Customer : ${item.customerId?.name || "N/A"}</p>
+    <p>Amount   : ${item.amount} ETB</p>
+    <p>Last Payment Date : ${this.$toEthiopianString(
+      item.customerId?.lastPaymentDate
+    )}</p>
+    <p>Date     : ${this.$toEthiopianString(paymentDate)}</p>
+    <p>Ref No   : ${item.referenceNumber}</p>
+    <p>Status   : ${item.status}</p>
+    <p>------------------------------</p>
+
+    <div style="text-align: center; margin-top: 10px;">
+      <p>*** Thank You! ***</p>
+    </div>
+  </div>
+`;
 
       const printWindow = window.open("", "", "width=400,height=600");
       printWindow.document.write(`
-    <html>
-      <head>
-        <title>Receipt</title>
-        <style>
-          @page {
-            size: 58mm auto; /* POS printer width */
-            margin: 0;       /* No margins */
-          }
-          body {
-            margin: 0;
-            padding: 5px;
-            font-family: monospace;
-            font-size: 12px;
-          }
-        </style>
-      </head>
-      <body>${printContent}</body>
-    </html>
-  `);
+  <html>
+    <head>
+      <title>Receipt</title>
+      <style>
+        @page {
+          size: 58mm auto; /* POS printer width */
+          margin: 0;       /* No margins */
+        }
+        body {
+          margin: 0;
+          padding: 5px;
+          font-family: monospace;
+          font-size: 14px; /* Increased font size */
+        }
+      </style>
+    </head>
+    <body>${printContent}</body>
+  </html>
+`);
+
       printWindow.document.close();
       printWindow.focus();
       printWindow.print();
